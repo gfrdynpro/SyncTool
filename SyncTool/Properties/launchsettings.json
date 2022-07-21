@@ -1,0 +1,10 @@
+﻿{
+    "profiles": {
+      "SyncTool (Package)": {
+        "commandName": "MsixPackage"
+      },
+      "SyncTool (Unpackaged)": {
+        "commandName": "Project"
+      }
+    }
+}
