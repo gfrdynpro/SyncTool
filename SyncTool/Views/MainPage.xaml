@@ -7,6 +7,16 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Content="Run Constant Contact Auth Test" Command="{x:Bind ViewModel.RunCCAuthTestCommand}"/>
+            <Button Content="Run Salesforce Auth Test" Command="{x:Bind ViewModel.RunSFAuthTestCommand}"/>
+        </StackPanel>
+        <WebView2 Grid.Row="1" Source="{x:Bind ViewModel.BrowserSource, Mode=TwoWay}" 
+                  NavigationStarting="{x:Bind ViewModel.OnNavigationStarting}"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </Page>

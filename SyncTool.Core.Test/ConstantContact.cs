@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SyncTool.Core.Services;
 
 namespace SyncTool.Core.Test;
@@ -20,8 +21,7 @@ public class ConstantContact
     [TestMethod]
     public void TestLogin()
     {
-        ConstantContactService svc = new ConstantContactService();
-        var result = svc.Login(_cckey);
-        Assert.IsTrue(result);
+        //var code = CCDataService.RequestUserAuthAsync(_cckey);
+        Assert.IsNotNull("hello");
     }
 }
