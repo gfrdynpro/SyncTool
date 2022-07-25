@@ -12,6 +12,10 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <UserSecretsId>4381e525-6368-4cbb-8543-0aef3c1b311c</UserSecretsId>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="CCAuthPage.xaml" />
+    <None Remove="Views\SFAuthPage.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
@@ -32,6 +36,12 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\SFAuthPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\CCAuthPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

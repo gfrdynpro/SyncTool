@@ -6,19 +6,21 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json;
 using SyncTool.Contracts.Services;
+using SyncTool.Models;
 using Windows.Security.Authentication.Web;
+using Windows.Web.Http;
 
 namespace SyncTool.Services;
 public class ConstantContactClientService : IConstantContactClientService
 {
     private string _codeChallenge;
     private string _codeVerifier;
-    private string _lastError;
+    private Token _authToken;
 
     public string BuildUserAuthUrl(string client_id)
     {
-        var code = string.Empty;
         _codeVerifier = GenerateCodeVerifier();
         _codeChallenge = GenerateCodeChallenge(_codeVerifier);
 
@@ -32,81 +34,98 @@ public class ConstantContactClientService : IConstantContactClientService
         return CCURL;
     }
 
-    /// <summary>
-    /// Makes initial request to Constant Contact API to obtain a user authorization code
-    /// This is later used to obtain a token using full client credentials
-    /// </summary>
-    /// <param name="client_id">The provided Client ID for the app</param>
-    /// <returns>Authorization Code</returns>
-    public async Task<string> RequestUserAuthAsync(string client_id)
-    {
-        var code = string.Empty;
-        _codeVerifier = GenerateCodeVerifier();
-        _codeChallenge = GenerateCodeChallenge(_codeVerifier);
-
-        try
-        {
-            var CCURL = "https://authz.constantcontact.com/oauth2/default/v1/authorize?response_type=code&client_id="
-                + client_id
-                + "&redirect_uri=" + Uri.EscapeDataString("https://localhost/SyncTool")
-                + "&scope=contact_data+campaign_data+offline_access"
-                + "&state=12345"
-                + "&code_challenge=" + _codeChallenge
-                + "&code_challenge_method=S256";
-
-
-            Debug.WriteLine("User Auth URL: " + CCURL);
-
-            Uri StartUri = new Uri(CCURL);
-            Uri EndUri = new Uri("https://localhost/SyncTool");
-
-            WebAuthenticationResult webAuthenticationResult = await WebAuthenticationBroker.AuthenticateAsync(
-                                            WebAuthenticationOptions.None,
-                                            StartUri,
-                                            EndUri);
-
-            if (webAuthenticationResult.ResponseStatus == WebAuthenticationStatus.Success)
-            {
-                var codeuri = webAuthenticationResult.ResponseData.ToString();
-                code = ExtractCode(codeuri);
-                Debug.WriteLine("User Auth Code: " + code);
-            }
-            else if (webAuthenticationResult.ResponseStatus == WebAuthenticationStatus.UserCancel)
-            {
-                _lastError = webAuthenticationResult.ResponseErrorDetail.ToString();
-                Debug.WriteLine("User Cancel returned by AuthenticateAsync() : " + _lastError);
-                code = null;
-                _lastError = webAuthenticationResult.ResponseErrorDetail.ToString();
-            }
-            else if (webAuthenticationResult.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
-            {
-                _lastError = webAuthenticationResult.ResponseErrorDetail.ToString();
-                Debug.WriteLine("HTTP Error returned by AuthenticateAsync() : " + _lastError);
-                code = null;
-                _lastError = webAuthenticationResult.ResponseErrorDetail.ToString();
-            }
-            else
-            {
-                _lastError = webAuthenticationResult.ResponseErrorDetail.ToString();
-                Debug.WriteLine("Error returned by AuthenticateAsync() : " + _lastError);
-                code = null;
-            }
-        }
-        catch (Exception error)
-        {
-            // Do something with errors here
-            _lastError = error.Message;
-            Debug.WriteLine(_lastError);
-            code = null;
-        }
-        return code;
-    }
-
-    private string ExtractCode(string codeuri)
+    public string ExtractCode(string codeuri)
     {
         var queryString = new Uri(codeuri).Query;
         var queryDictionary = System.Web.HttpUtility.ParseQueryString(queryString);
         return queryDictionary["code"];
+    }
+
+    public async Task<Token> RequestAccessTokenAsync(string client_id, string auth_code)
+    {
+        var token = new Token();
+
+        Debug.WriteLine("**** START GET ACCESS TOKEN ****");
+
+        try
+        {
+            var client = new HttpClient();
+
+            Uri ccTokenURL = new Uri("https://authz.constantcontact.com/oauth2/default/v1/token");
+
+            var payload = new Dictionary<string, string>();
+            payload.Add("client_id", client_id);
+            payload.Add("redirect_uri", "https://localhost/SyncTool");
+            payload.Add("code", auth_code);
+            payload.Add("code_verifier", _codeVerifier);
+            payload.Add("grant_type", "authorization_code");
+
+            var byteContent = new HttpFormUrlEncodedContent(payload);
+            var response = await client.PostAsync(ccTokenURL, byteContent);
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                token = JsonConvert.DeserializeObject<Token>(body);
+                token.ExpiryDate = DateTime.UtcNow.AddSeconds(token.ExpiresIn);
+                _authToken = token;
+            }
+            else
+            {
+                Debug.WriteLine(response.Content);
+                Debug.WriteLine(response.ReasonPhrase);
+            }
+        } 
+        catch(Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+
+        return token;
+    }
+
+    public async Task<Token> RefreshAccessTokenAsync(string client_id)
+    {
+        Debug.WriteLine("**** START REFRESH TOKEN ****");
+
+        if (_authToken == null)
+        {
+            return _authToken;
+        }
+
+        try
+        {
+            var client = new HttpClient();
+
+            Uri ccURL = new Uri("https://authz.constantcontact.com/oauth2/default/v1/token");
+
+            var payload = new Dictionary<string, string>();
+            payload.Add("client_id", client_id);
+            payload.Add("redirect_uri", "https://localhost/SyncTool");
+            payload.Add("refresh_token", _authToken.RefreshToken);
+            payload.Add("grant_type", "refresh_token");
+            var byteContent = new HttpFormUrlEncodedContent(payload);
+
+            var response = await client.PostAsync(ccURL, byteContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                var token = JsonConvert.DeserializeObject<Token>(body);
+                token.ExpiryDate = DateTime.UtcNow.AddSeconds(token.ExpiresIn);
+                _authToken = token;
+            }
+            else
+            {
+                Debug.WriteLine(response.Content);
+                Debug.WriteLine(response.ReasonPhrase);
+            }
+        }
+        catch(Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+
+        return _authToken;
     }
 
     /// <summary>
