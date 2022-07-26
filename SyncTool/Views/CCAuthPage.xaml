@@ -11,6 +11,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -35,8 +36,10 @@
                 <TextBlock Text="{x:Bind ViewModel.RenewalDateTime, Mode=OneWay}"/>
             </StackPanel>
         </StackPanel>
-        <Button Grid.Row="0" Grid.Column="1" Content="Authenicate" Command="{x:Bind ViewModel.RunCCAuthCommand}" Margin="10,0,10,0"/>
-        <WebView2 Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+        <Button Grid.Row="0" Grid.Column="1" Content="Authenticate" Command="{x:Bind ViewModel.RunCCAuthCommand}" Margin="10,0,10,0"/>
+        <InfoBar Grid.Row="1" Grid.ColumnSpan="2" IsOpen="{x:Bind ViewModel.MissingAPIKey, Mode=TwoWay}" Severity="Error" Title="Error"
+                 Message="You first need to configure an API Key for the Constant Contact API" />
+        <WebView2 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
                   Source="{x:Bind ViewModel.BrowserSource, Mode=TwoWay}" 
                   NavigationStarting="{x:Bind ViewModel.OnNavigationStarting}"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"

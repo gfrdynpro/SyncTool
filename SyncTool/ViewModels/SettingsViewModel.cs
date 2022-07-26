@@ -14,6 +14,9 @@ namespace SyncTool.ViewModels;
 
 public class SettingsViewModel : ObservableRecipient
 {
+    readonly Windows.Storage.ApplicationDataContainer localSettings =
+    Windows.Storage.ApplicationData.Current.LocalSettings;
+
     private readonly IThemeSelectorService _themeSelectorService;
     private ElementTheme _elementTheme;
 
@@ -21,6 +24,28 @@ public class SettingsViewModel : ObservableRecipient
     {
         get => _elementTheme;
         set => SetProperty(ref _elementTheme, value);
+    }
+
+    private string _constantContactAPIKey;
+    public string ConstantContactAPIKey
+    {
+        get => _constantContactAPIKey;
+        set
+        {
+            SetProperty(ref _constantContactAPIKey, value);
+            localSettings.Values["ccAPIKey"] = value;
+        }
+    }
+
+    private string _salesforceAPIKey;
+    public string SalesforceAPIKey
+    {
+        get => _salesforceAPIKey;
+        set
+        {
+            SetProperty(ref _salesforceAPIKey, value);
+            localSettings.Values["sfAPIKey"] = value;
+        }
     }
 
     private string _versionDescription;
@@ -59,13 +84,14 @@ public class SettingsViewModel : ObservableRecipient
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
         VersionDescription = GetVersionDescription();
+        ConstantContactAPIKey = localSettings.Values["ccAPIKey"] as string;
+        SalesforceAPIKey = localSettings.Values["sfAPIKey"] as string;
     }
 
     private static string GetVersionDescription()
     {
         var appName = "AppDisplayName".GetLocalized();
         var version = Package.Current.Id.Version;
-
         return $"{appName} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
 }

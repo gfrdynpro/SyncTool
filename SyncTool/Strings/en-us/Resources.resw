@@ -159,4 +159,16 @@
   <data name="Shell_SFAuth.Content" xml:space="preserve">
     <value>Salesforce Auth</value>
   </data>
+  <data name="Settings_ConstantContact.Text" xml:space="preserve">
+    <value>Constant Contact</value>
+  </data>
+  <data name="Settings_ConstantContact_Key.Header" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Settings_Salesforce.Text" xml:space="preserve">
+    <value>Salesforce</value>
+  </data>
+  <data name="Settings_Salesforce_Key.Header" xml:space="preserve">
+    <value>API Key</value>
+  </data>
 </root>

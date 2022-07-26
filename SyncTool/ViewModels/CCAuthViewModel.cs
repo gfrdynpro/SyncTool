@@ -15,26 +15,41 @@ using SyncTool.Contracts.Services;
 namespace SyncTool.ViewModels;
 public class CCAuthViewModel : ObservableRecipient
 {
+    private readonly Windows.Storage.ApplicationDataContainer localSettings = 
+        Windows.Storage.ApplicationData.Current.LocalSettings;
     private readonly IConstantContactClientService _ccService;
-    private string _cckey;
+    private readonly string _cckey;
 
     public CCAuthViewModel()
     {
         BrowserSource = "about:blank";
         RunCCAuthCommand = new RelayCommand(RunCCAuth);
         _ccService = App.GetService<IConstantContactClientService>();
+        // var configuration = new ConfigurationBuilder().AddUserSecrets<MainViewModel>().Build();
+        // _cckey = configuration["CCAPIKey"];
+        _cckey = localSettings.Values["ccAPIKey"] as string;
+        if (_cckey != null && _cckey.Length > 5)
+        {
+            MissingAPIKey = false;
+        } else
+        {
+            MissingAPIKey = true;
+        }
     }
 
     public ICommand RunCCAuthCommand { get; }
 
     private void RunCCAuth()
     {
-        var configuration = new ConfigurationBuilder().AddUserSecrets<MainViewModel>().Build();
-        _cckey = configuration["CCAPIKey"];
         if (_cckey != null && _cckey.Length > 5)
         {
+            MissingAPIKey = false;
             var authURL = _ccService.BuildUserAuthUrl(_cckey);
             BrowserSource = authURL;
+        }
+        else
+        {
+            MissingAPIKey = true;
         }
     }
 
@@ -56,6 +71,13 @@ public class CCAuthViewModel : ObservableRecipient
                 Debug.WriteLine(result);
             }
         }
+    }
+
+    private bool _missingAPIKey;
+    public bool MissingAPIKey
+    { 
+        get => _missingAPIKey;
+        set => SetProperty(ref _missingAPIKey, value);
     }
 
     private string _browserSource;
