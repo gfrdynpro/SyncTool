@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 using SyncTool.Contracts.Services;
+using SyncTool.Models;
 
 namespace SyncTool.ViewModels;
 public class CCAuthViewModel : ObservableRecipient
@@ -25,6 +26,7 @@ public class CCAuthViewModel : ObservableRecipient
         BrowserSource = "about:blank";
         RunCCAuthCommand = new RelayCommand(RunCCAuth);
         _ccService = App.GetService<IConstantContactClientService>();
+        UpdateTokenDisplay(_ccService.GetToken());
         // var configuration = new ConfigurationBuilder().AddUserSecrets<MainViewModel>().Build();
         // _cckey = configuration["CCAPIKey"];
         _cckey = localSettings.Values["ccAPIKey"] as string;
@@ -65,11 +67,19 @@ public class CCAuthViewModel : ObservableRecipient
             if(e.Uri.Length > 0)
             {
                 var result = await _ccService.RequestAccessTokenAsync(_cckey, AuthCode);
-                AccessToken = result.AccessToken;
-                RefreshToken = result.RefreshToken;
-                RenewalDateTime = result.ExpiryDate.ToString(@"yyyy-MM-dd hh:mm:ss tt");
+                UpdateTokenDisplay(result);
                 Debug.WriteLine(result);
             }
+        }
+    }
+
+    private void UpdateTokenDisplay(Token result)
+    {
+        if (result != null)
+        {
+            AccessToken = result.AccessToken;
+            RefreshToken = result.RefreshToken;
+            RenewalDateTime = result.ExpiryDate.ToString(@"yyyy-MM-dd hh:mm:ss tt");
         }
     }
 

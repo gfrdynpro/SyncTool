@@ -8,6 +8,7 @@ using SyncTool.Models;
 namespace SyncTool.Contracts.Services;
 public interface IConstantContactClientService
 {
+    Token GetToken();
     string BuildUserAuthUrl(string client_id);
     string ExtractCode(string codeuri);
     Task<Token> RequestAccessTokenAsync(string client_id, string auth_code);

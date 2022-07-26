@@ -19,6 +19,22 @@ public class ConstantContactClientService : IConstantContactClientService
     private string _codeVerifier;
     private Token _authToken;
 
+    public ConstantContactClientService()
+    {
+        var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+        var result = settings.Values["CCToken"] as string;
+        if (result != null)
+        {
+            _authToken = JsonConvert.DeserializeObject<Token>(result);
+        }
+
+    }
+
+    public Token GetToken()
+    {
+        return _authToken;
+    }
+
     public string BuildUserAuthUrl(string client_id)
     {
         _codeVerifier = GenerateCodeVerifier();
@@ -68,6 +84,11 @@ public class ConstantContactClientService : IConstantContactClientService
                 token = JsonConvert.DeserializeObject<Token>(body);
                 token.ExpiryDate = DateTime.UtcNow.AddSeconds(token.ExpiresIn);
                 _authToken = token;
+                // Also stash away for future use
+                var strToken = JsonConvert.SerializeObject(_authToken);
+                var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                settings.Values["CCToken"] = strToken;
+
             }
             else
             {
@@ -113,6 +134,10 @@ public class ConstantContactClientService : IConstantContactClientService
                 var token = JsonConvert.DeserializeObject<Token>(body);
                 token.ExpiryDate = DateTime.UtcNow.AddSeconds(token.ExpiresIn);
                 _authToken = token;
+                // Also stash away for future use
+                var strToken = JsonConvert.SerializeObject(_authToken);
+                var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                settings.Values["CCToken"] = strToken;
             }
             else
             {
