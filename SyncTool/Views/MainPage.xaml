@@ -7,6 +7,6 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-
+        <Image Source="../Assets/SplashScreen.scale-400.png" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </Page>

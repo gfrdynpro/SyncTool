@@ -22,8 +22,7 @@ public class ConstantContactClientService : IConstantContactClientService
     public ConstantContactClientService()
     {
         var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
-        var result = settings.Values["CCToken"] as string;
-        if (result != null)
+        if (settings.Values["CCToken"] is string result)
         {
             _authToken = JsonConvert.DeserializeObject<Token>(result);
         }
