@@ -20,6 +20,8 @@ public class PageService : IPageService
     {
         Configure<MainViewModel, MainPage>();
         Configure<CCAuthViewModel, CCAuthPage>();
+        Configure<CCtoSFViewModel, CCtoSFPage>();
+        Configure<SFtoCCViewModel, SFtoCCPage>();
         Configure<SFAuthViewModel, SFAuthPage>();
         Configure<SettingsViewModel, SettingsPage>();
     }

@@ -52,7 +52,13 @@ public partial class App : Application
             services.AddTransient<MainPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
+            services.AddTransient<CCtoSFPage>();
+            services.AddTransient<CCtoSFViewModel>();
+            services.AddTransient<SFtoCCPage>();
+            services.AddTransient<SFtoCCViewModel>();
+            services.AddTransient<CCAuthPage>();
             services.AddTransient<CCAuthViewModel>();
+            services.AddTransient<SFAuthPage>();
             services.AddTransient<SFAuthViewModel>();
 
             // Configuration

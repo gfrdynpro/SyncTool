@@ -171,4 +171,10 @@
   <data name="Settings_Salesforce_Key.Header" xml:space="preserve">
     <value>API Key</value>
   </data>
+  <data name="Shell_CCtoSF.Content" xml:space="preserve">
+    <value>Constant Contact to Salesforce</value>
+  </data>
+  <data name="Shell_SFtoCC.Content" xml:space="preserve">
+    <value>Salesforce to Constant Contact</value>
+  </data>
 </root>
