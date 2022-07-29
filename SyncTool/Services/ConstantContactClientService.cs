@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using SyncTool.Contracts.Services;
+using SyncTool.Core.Models.CC;
+using SyncTool.Core.Services;
 using SyncTool.Models;
 using Windows.Security.Authentication.Web;
 using Windows.Web.Http;
@@ -15,6 +17,7 @@ using Windows.Web.Http;
 namespace SyncTool.Services;
 public class ConstantContactClientService : IConstantContactClientService
 {
+    private string _client_id;
     private string _codeChallenge;
     private string _codeVerifier;
     private Token _authToken;
@@ -22,6 +25,7 @@ public class ConstantContactClientService : IConstantContactClientService
     public ConstantContactClientService()
     {
         var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+        _client_id = settings.Values["ccAPIKey"] as string;
         if (settings.Values["CCToken"] is string result)
         {
             _authToken = JsonConvert.DeserializeObject<Token>(result);
@@ -29,18 +33,23 @@ public class ConstantContactClientService : IConstantContactClientService
 
     }
 
+    public string GetClientID()
+    {
+        return _client_id;
+    }
+
     public Token GetToken()
     {
         return _authToken;
     }
 
-    public string BuildUserAuthUrl(string client_id)
+    public string BuildUserAuthUrl()
     {
         _codeVerifier = GenerateCodeVerifier();
         _codeChallenge = GenerateCodeChallenge(_codeVerifier);
 
         var CCURL = "https://authz.constantcontact.com/oauth2/default/v1/authorize?response_type=code&client_id="
-                + client_id
+                + _client_id
                 + "&redirect_uri=" + Uri.EscapeDataString("https://localhost/SyncTool")
                 + "&scope=contact_data+campaign_data+offline_access"
                 + "&state=12345"
@@ -56,7 +65,7 @@ public class ConstantContactClientService : IConstantContactClientService
         return queryDictionary["code"];
     }
 
-    public async Task<Token> RequestAccessTokenAsync(string client_id, string auth_code)
+    public async Task<Token> RequestAccessTokenAsync(string auth_code)
     {
         var token = new Token();
 
@@ -69,7 +78,7 @@ public class ConstantContactClientService : IConstantContactClientService
             Uri ccTokenURL = new Uri("https://authz.constantcontact.com/oauth2/default/v1/token");
 
             var payload = new Dictionary<string, string>();
-            payload.Add("client_id", client_id);
+            payload.Add("client_id", _client_id);
             payload.Add("redirect_uri", "https://localhost/SyncTool");
             payload.Add("code", auth_code);
             payload.Add("code_verifier", _codeVerifier);
@@ -103,7 +112,7 @@ public class ConstantContactClientService : IConstantContactClientService
         return token;
     }
 
-    public async Task<Token> RefreshAccessTokenAsync(string client_id)
+    public async Task<Token> RefreshAccessTokenAsync()
     {
         Debug.WriteLine("**** START REFRESH TOKEN ****");
 
@@ -119,7 +128,7 @@ public class ConstantContactClientService : IConstantContactClientService
             Uri ccURL = new Uri("https://authz.constantcontact.com/oauth2/default/v1/token");
 
             var payload = new Dictionary<string, string>();
-            payload.Add("client_id", client_id);
+            payload.Add("client_id", _client_id);
             payload.Add("redirect_uri", "https://localhost/SyncTool");
             payload.Add("refresh_token", _authToken.RefreshToken);
             payload.Add("grant_type", "refresh_token");
@@ -200,5 +209,12 @@ public class ConstantContactClientService : IConstantContactClientService
         Debug.WriteLine("Code Verifer Length is (min 43): " + codeVerifier.Length);
 
         return codeVerifier;
+    }
+
+    public async Task<CampaignList> GetCampaignsAsync()
+    {
+        var apiClient = new HttpDataService("https://api.cc.email/v3");
+        var results = await apiClient.GetAsync<CampaignList>("emails", _authToken.AccessToken);
+        return results;
     }
 }

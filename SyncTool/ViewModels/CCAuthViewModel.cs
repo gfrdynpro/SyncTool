@@ -19,7 +19,6 @@ public class CCAuthViewModel : ObservableRecipient
     private readonly Windows.Storage.ApplicationDataContainer localSettings = 
         Windows.Storage.ApplicationData.Current.LocalSettings;
     private readonly IConstantContactClientService _ccService;
-    private readonly string _cckey;
 
     public CCAuthViewModel()
     {
@@ -27,9 +26,7 @@ public class CCAuthViewModel : ObservableRecipient
         RunCCAuthCommand = new RelayCommand(RunCCAuth);
         _ccService = App.GetService<IConstantContactClientService>();
         UpdateTokenDisplay(_ccService.GetToken());
-        // var configuration = new ConfigurationBuilder().AddUserSecrets<MainViewModel>().Build();
-        // _cckey = configuration["CCAPIKey"];
-        _cckey = localSettings.Values["ccAPIKey"] as string;
+        var _cckey = _ccService.GetClientID();
         if (_cckey != null && _cckey.Length > 5)
         {
             MissingAPIKey = false;
@@ -43,11 +40,12 @@ public class CCAuthViewModel : ObservableRecipient
 
     private void RunCCAuth()
     {
+        var _cckey = _ccService.GetClientID();
         if (_cckey != null && _cckey.Length > 5)
         {
             MissingAPIKey = false;
-            var authURL = _ccService.BuildUserAuthUrl(_cckey);
-            BrowserSource = authURL;
+            var authURL = _ccService.BuildUserAuthUrl();
+            BrowserSource = authURL; // This automatically triggers browser page load
         }
         else
         {
@@ -66,7 +64,7 @@ public class CCAuthViewModel : ObservableRecipient
             BrowserSource = "about:blank";
             if(e.Uri.Length > 0)
             {
-                var result = await _ccService.RequestAccessTokenAsync(_cckey, AuthCode);
+                var result = await _ccService.RequestAccessTokenAsync(AuthCode);
                 UpdateTokenDisplay(result);
                 Debug.WriteLine(result);
             }
