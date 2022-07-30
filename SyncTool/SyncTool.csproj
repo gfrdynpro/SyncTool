@@ -13,6 +13,7 @@
     <UserSecretsId>4381e525-6368-4cbb-8543-0aef3c1b311c</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\RedArrowLtoR.png" />
     <None Remove="CCAuthPage.xaml" />
     <None Remove="Views\CCtoSFMappingPage.xaml" />
     <None Remove="Views\CCtoSFPage.xaml" />

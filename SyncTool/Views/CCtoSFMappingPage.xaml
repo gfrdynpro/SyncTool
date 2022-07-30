@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SyncTool.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:models="using:SyncTool.Core.Models"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -18,15 +19,22 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" Text="Constant Contact Fields"/>
-        <ListView x:Name="CCFieldLV" ItemsSource="{x:Bind ViewModel.CCFieldMappings}" Grid.Column="0" Grid.Row="1">
+        <ListView x:Name="CCFieldLV" ItemsSource="{x:Bind ViewModel.CCFieldMappings, Mode=TwoWay}" Grid.Column="0" Grid.Row="1">
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="CCFieldMapping">
+                <DataTemplate x:DataType="models:CCtoSFFieldMapping">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="{StaticResource SmallTopBottomMargin}">
+                            <TextBlock Text="{Binding CCField}" Margin="5"/>
+                        </Border>
+                        <Image Grid.Column="1" Source="../Assets/RedArrowLtoR.png" Height="20"/>
+                        <Border Grid.Column="2" BorderBrush="Black" BorderThickness="1" Margin="{StaticResource SmallTopBottomMargin}">
+                            <TextBlock Text="{Binding SFField}" Margin="5"/>
+                        </Border>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -34,8 +42,10 @@
         <TextBlock Grid.Column="1" Grid.Row="0" Text="Salesforce Fields"/>
         <ListView x:Name="SFFieldLV" Grid.Column="1" Grid.Row="1">
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="SFField">
-                    
+                <DataTemplate>
+                    <Border>
+                        <TextBlock Text="{Binding Name}"/>
+                    </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
