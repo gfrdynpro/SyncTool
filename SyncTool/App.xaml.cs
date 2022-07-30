@@ -60,6 +60,8 @@ public partial class App : Application
             services.AddTransient<CCAuthViewModel>();
             services.AddTransient<SFAuthPage>();
             services.AddTransient<SFAuthViewModel>();
+            services.AddTransient<CCtoSFMappingPage>();
+            services.AddTransient<CCtoSFMappingViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

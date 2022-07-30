@@ -24,6 +24,7 @@ public class PageService : IPageService
         Configure<SFtoCCViewModel, SFtoCCPage>();
         Configure<SFAuthViewModel, SFAuthPage>();
         Configure<SettingsViewModel, SettingsPage>();
+        Configure<CCtoSFMappingViewModel, CCtoSFMappingPage>();
     }
 
     public Type GetPageType(string key)
