@@ -42,6 +42,8 @@ public partial class App : Application
 
             services.AddSingleton<IConstantContactClientService, ConstantContactClientService>();
 
+            services.AddSingleton<IMappingService, MappingService>();
+
             // Core Services
             services.AddSingleton<IFileService, FileService>();
 

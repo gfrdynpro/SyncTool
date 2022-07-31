@@ -12,19 +12,21 @@ namespace SyncTool.ViewModels;
 public class CCtoSFMappingViewModel : ObservableRecipient
 {
     private readonly INavigationService _navService;
+    private readonly IMappingService _mappingService;
 
     public CCtoSFMappingViewModel()
     {
         _navService = App.GetService<INavigationService>();
+        _mappingService = App.GetService<IMappingService>();
         BuildFieldMappings();
     }
 
     private void BuildFieldMappings()
     {
-        var list = new ObservableCollection<CCtoSFFieldMapping>();
-        list.Add(new CCtoSFFieldMapping { CCField = "email_address", SFField = "email" });
-        list.Add(new CCtoSFFieldMapping { CCField = "permission_to_send", SFField = "opt_out" });
-        CCFieldMappings = list;
+        var obslist = new ObservableCollection<CCtoSFFieldMapping>();
+        var list = _mappingService.GetCCtoSFMappings();
+        foreach (var mapping in list) { obslist.Add(mapping); }
+        CCFieldMappings = obslist;
     }
 
     public ObservableCollection<CCtoSFFieldMapping> CCFieldMappings

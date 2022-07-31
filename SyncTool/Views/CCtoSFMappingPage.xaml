@@ -18,7 +18,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" Text="Constant Contact Fields"/>
+        <TextBlock Grid.Column="0" Grid.Row="0" Text="Constant Contact Fields to Salesforce Fields"/>
         <ListView x:Name="CCFieldLV" ItemsSource="{x:Bind ViewModel.CCFieldMappings, Mode=TwoWay}" Grid.Column="0" Grid.Row="1">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:CCtoSFFieldMapping">
@@ -39,7 +39,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <TextBlock Grid.Column="1" Grid.Row="0" Text="Salesforce Fields"/>
+        <TextBlock Grid.Column="1" Grid.Row="0" Text="Available Salesforce Fields"/>
         <ListView x:Name="SFFieldLV" Grid.Column="1" Grid.Row="1">
             <ListView.ItemTemplate>
                 <DataTemplate>
