@@ -41,6 +41,7 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
 
             services.AddSingleton<IConstantContactClientService, ConstantContactClientService>();
+            services.AddSingleton<ISalesforceClientService, SalesforceClientService>();
 
             services.AddSingleton<IMappingService, MappingService>();
 

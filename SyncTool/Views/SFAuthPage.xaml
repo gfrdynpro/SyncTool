@@ -9,6 +9,40 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="10,10,0,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Auth Code:" FontWeight="Bold" Margin="0,0,5,0"/>
+                <TextBlock Text="{x:Bind ViewModel.AuthCode, Mode=OneWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Access Token: " FontWeight="Bold" Margin="0,0,5,0"/>
+                <TextBlock Text="{x:Bind ViewModel.AccessToken, Mode=OneWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Refresh Token:" FontWeight="Bold" Margin="0,0,5,0"/>
+                <TextBlock Text="{x:Bind ViewModel.RefreshToken, Mode=OneWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Renewal Date and Time:" FontWeight="Bold" Margin="0,0,5,0"/>
+                <TextBlock Text="{x:Bind ViewModel.RenewalDateTime, Mode=OneWay}"/>
+            </StackPanel>
+        </StackPanel>
+        <Button Grid.Row="0" Grid.Column="1" Content="Authenticate" Command="{x:Bind ViewModel.RunSFAuthCommand}" Style="{StaticResource AccentButtonStyle}" Margin="10,0,10,0"/>
+        <InfoBar Grid.Row="1" Grid.ColumnSpan="2" IsOpen="{x:Bind ViewModel.MissingAPIKey, Mode=TwoWay}" Severity="Error" Title="Error"
+                 Message="You first need to configure an API Key for the Salesforce API" />
+        <WebView2 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                  Source="{x:Bind ViewModel.BrowserSource, Mode=TwoWay}" 
+                  NavigationStarting="{x:Bind ViewModel.OnNavigationStarting}"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  Margin="0,10,0,0"/>
     </Grid>
 </Page>
