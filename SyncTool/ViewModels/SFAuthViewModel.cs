@@ -45,7 +45,17 @@ public partial class SFAuthViewModel : ObservableRecipient
 
     private void RunSFAuth()
     {
-    
+        var _sfkey = _sfService.GetClientID();
+        if (_sfkey != null && _sfkey.Length > 5)
+        {
+            MissingAPIKey = false;
+            var authURL = _sfService.BuildUserAuthUrl();
+            BrowserSource = authURL; // This automatically triggers browser page load
+        }
+        else
+        {
+            MissingAPIKey = true;
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]

@@ -48,6 +48,17 @@ public class SettingsViewModel : ObservableRecipient
         }
     }
 
+    private string _salesforceAPISecret;
+    public string SalesforceAPISecret
+    {
+        get => _salesforceAPISecret;
+        set
+        {
+            SetProperty(ref _salesforceAPISecret, value);
+            localSettings.Values["sfAPISecret"] = value;
+        }
+    }
+
     private string _versionDescription;
 
     public string VersionDescription
@@ -86,6 +97,7 @@ public class SettingsViewModel : ObservableRecipient
         VersionDescription = GetVersionDescription();
         ConstantContactAPIKey = localSettings.Values["ccAPIKey"] as string;
         SalesforceAPIKey = localSettings.Values["sfAPIKey"] as string;
+        SalesforceAPISecret = localSettings.Values["sfAPISecret"] as string;
     }
 
     private static string GetVersionDescription()

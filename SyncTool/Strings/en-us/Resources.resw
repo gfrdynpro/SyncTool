@@ -177,4 +177,7 @@
   <data name="Shell_SFtoCC.Content" xml:space="preserve">
     <value>Salesforce to Constant Contact</value>
   </data>
+  <data name="Settings_Salesforce_Secret.Header" xml:space="preserve">
+    <value>API Secret</value>
+  </data>
 </root>

@@ -10,6 +10,7 @@ public interface ISalesforceClientService
 {
     string GetClientID();
     Token GetToken();
+    string BuildUserAuthUrl();
     string ExtractCode(string codeuri);
     Task<Token> RequestAccessTokenAsync(string auth_code);
     Task<Token> RefreshAccessTokenAsync();

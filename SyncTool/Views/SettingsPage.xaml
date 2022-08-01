@@ -20,6 +20,7 @@
             <TextBlock x:Uid="Settings_Salesforce" Style="{ThemeResource SubtitleTextBlockStyle}"/>
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                 <TextBox x:Uid="Settings_Salesforce_Key" Text="{x:Bind ViewModel.SalesforceAPIKey, Mode=TwoWay}"/>
+                <TextBox x:Uid="Settings_Salesforce_Secret" Text="{x:Bind ViewModel.SalesforceAPISecret, Mode=TwoWay}"/>
             </StackPanel>
             <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
