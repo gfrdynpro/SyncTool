@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SyncTool.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:cc="using:SyncTool.Core.Models.CC"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -18,8 +19,14 @@
                 Command="{x:Bind ViewModel.RunConfigureMappingsCommand}"
                 HorizontalAlignment="Stretch" Margin="5"/>
         <TextBlock Grid.Row="1" Text="Available Campaigns" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="5,5,5,0"/>
-        <ListView Grid.Row="2" Margin="5" ItemsSource="{x:Bind ViewModel.CampaignList}" 
+        <ListView Grid.Row="2" Margin="5" ItemsSource="{x:Bind ViewModel.CampaignList, Mode=OneWay}" 
                   BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" 
-                  BorderThickness="1"/>
+                  BorderThickness="1">
+            <ListView.ItemTemplate>
+                <DataTemplate x:Name="CampaignDataTemplate" x:DataType="cc:Campaign">
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Page>

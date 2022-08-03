@@ -47,8 +47,10 @@ public class CCtoSFViewModel : ObservableRecipient
         }
     }
 
+    private ObservableCollection<Campaign> _campaignList;
     public ObservableCollection<Campaign> CampaignList
     {
-        get; set;
+        get => _campaignList;
+        set => SetProperty(ref _campaignList, value);
     }
 }
