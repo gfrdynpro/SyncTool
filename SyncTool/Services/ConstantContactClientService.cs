@@ -211,10 +211,19 @@ public class ConstantContactClientService : IConstantContactClientService
         return codeVerifier;
     }
 
-    public async Task<CampaignList> GetCampaignsAsync()
+    public async Task<List<Campaign>> GetCampaignsAsync()
     {
-        var apiClient = new HttpDataService("https://api.cc.email/v3");
-        var results = await apiClient.GetAsync<CampaignList>("emails", _authToken.AccessToken);
-        return results;
+        var theList = new List<Campaign>();
+        var apiClient = new HttpDataService("https://api.cc.email");
+        var results = await apiClient.GetAsync<CampaignList>("/v3/emails", _authToken.AccessToken);
+        theList.AddRange(results.Campaigns);
+        var next = results.Links.Next.Href;
+        while (next != null)
+        {
+            var results2 = await apiClient.GetAsync<CampaignList>(next, _authToken.AccessToken);
+            theList.AddRange(results2.Campaigns);
+            next = results2.Links?.Next.Href; 
+        }
+        return theList;
     }
 }

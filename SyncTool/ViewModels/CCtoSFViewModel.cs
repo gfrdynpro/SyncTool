@@ -39,7 +39,7 @@ public class CCtoSFViewModel : ObservableRecipient
         {
             var campaigns = await _ccService.GetCampaignsAsync();
             var list = new ObservableCollection<Campaign>();
-            foreach (var item in campaigns.Campaigns)
+            foreach (var item in campaigns)
             {
                 list.Add(item);
             }

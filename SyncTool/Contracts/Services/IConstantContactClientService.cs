@@ -15,5 +15,5 @@ public interface IConstantContactClientService
     string ExtractCode(string codeuri);
     Task<Token> RequestAccessTokenAsync(string auth_code);
     Task<Token> RefreshAccessTokenAsync();
-    Task<CampaignList> GetCampaignsAsync();
+    Task<List<Campaign>> GetCampaignsAsync();
 }
