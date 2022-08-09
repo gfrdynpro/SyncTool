@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Controls;
 using SyncTool.Contracts.Services;
+using SyncTool.Contracts.ViewModels;
 using SyncTool.Core.Models.CC;
 using SyncTool.Models;
 
 namespace SyncTool.ViewModels;
-public class CCtoSFViewModel : ObservableRecipient
+public partial class CCtoSFViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IConstantContactClientService _ccService;
     private readonly INavigationService _navService;
@@ -22,6 +24,7 @@ public class CCtoSFViewModel : ObservableRecipient
         RunConfigureMappingsCommand = new RelayCommand(RunConfigureMappings);
         _ccService = App.GetService<IConstantContactClientService>();
         _navService = App.GetService<INavigationService>();
+        CampaignList = new ObservableCollection<Campaign>();
         LoadCampaigns();
     }
 
@@ -34,23 +37,37 @@ public class CCtoSFViewModel : ObservableRecipient
 
     private async void LoadCampaigns()
     {
+        ShowBusy = true;
         var token = await _ccService.RefreshAccessTokenAsync();
         if (token != null)
         {
             var campaigns = await _ccService.GetCampaignsAsync();
-            var list = new ObservableCollection<Campaign>();
+            CampaignList.Clear();
             foreach (var item in campaigns)
             {
-                list.Add(item);
+                CampaignList.Add(item);
             }
-            CampaignList = list;
         }
+        ShowBusy = false;
     }
 
-    private ObservableCollection<Campaign> _campaignList;
-    public ObservableCollection<Campaign> CampaignList
+    public void CampaignSelected(object sender, ItemClickEventArgs e)
     {
-        get => _campaignList;
-        set => SetProperty(ref _campaignList, value);
+        var clickedItem = (Campaign)e.ClickedItem;
+        _navService.NavigateTo("SyncTool.ViewModels.CCtoSFSyncViewModel", clickedItem);
     }
+
+    public void OnNavigatedTo(object parameter)
+    {
+    }
+
+    public void OnNavigatedFrom()
+    {
+    }
+
+    [ObservableProperty]
+    private ObservableCollection<Campaign> campaignList;
+
+    [ObservableProperty]
+    private bool showBusy;
 }

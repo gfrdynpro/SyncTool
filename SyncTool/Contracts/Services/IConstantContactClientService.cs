@@ -16,4 +16,6 @@ public interface IConstantContactClientService
     Task<Token> RequestAccessTokenAsync(string auth_code);
     Task<Token> RefreshAccessTokenAsync();
     Task<List<Campaign>> GetCampaignsAsync();
+    Task<Campaign> GetCampaignDetailsAsync(Guid CampaignId);
+    Task<List<TrackingActivity>> GetAllTrackingActivitiesAsync(Guid CampaignActivityId);
 }

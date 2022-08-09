@@ -6,6 +6,12 @@ using Newtonsoft.Json;
 namespace SyncTool.Core.Models.CC;
 public partial class Campaign
 {
+    [JsonProperty("campaign_activities")]
+    public CampaignActivity[] CampaignActivities
+    {
+        get; set;
+    }
+
     [JsonProperty("campaign_id")]
     public Guid CampaignId
     {

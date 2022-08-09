@@ -18,6 +18,7 @@
     <None Remove="CCAuthPage.xaml" />
     <None Remove="Views\CCtoSFMappingPage.xaml" />
     <None Remove="Views\CCtoSFPage.xaml" />
+    <None Remove="Views\CCtoSFSyncPage.xaml" />
     <None Remove="Views\SFAuthPage.xaml" />
     <None Remove="Views\SFtoCCPage.xaml" />
   </ItemGroup>
@@ -41,6 +42,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\CCtoSFSyncPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\CCtoSFMappingPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -226,4 +226,19 @@ public class ConstantContactClientService : IConstantContactClientService
         }
         return theList;
     }
+
+    public async Task<Campaign> GetCampaignDetailsAsync(Guid CampaignId)
+    {
+        var apiClient = new HttpDataService("https://api.cc.email");
+        var details = await apiClient.GetAsync<Campaign>("/v3/emails/" + CampaignId.ToString(), _authToken.AccessToken);
+        return details;
+    }
+
+    // Build up a full list of Tracking Activities - not sure why cannot get them all in one go.
+    // Get /reports/email_reports/{campaign_activity_id}/tracking/opens
+    // Get /reports/email_reports/{campaign_activity_id}/tracking/optouts
+    // Get /reports/email_reports/{campaign_activity_id}/tracking/bounces
+    // Get /reports/email_reports/{campaign_activity_id}/tracking/didnotopens
+    // Get /reports/email_reports/{campaign_activity_id}/tracking/clicks
+    public Task<List<TrackingActivity>> GetAllTrackingActivitiesAsync(Guid CampaignActivityId) => throw new NotImplementedException();
 }

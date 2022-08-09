@@ -65,6 +65,8 @@ public partial class App : Application
             services.AddTransient<SFAuthViewModel>();
             services.AddTransient<CCtoSFMappingPage>();
             services.AddTransient<CCtoSFMappingViewModel>();
+            services.AddTransient<CCtoSFSyncPage>();
+            services.AddTransient<CCtoSFSyncViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
