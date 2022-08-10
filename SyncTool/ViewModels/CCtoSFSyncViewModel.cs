@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
     {
         Debug.WriteLine("CC to SF Sync View Model Loaded");
         _ccService = App.GetService<IConstantContactClientService>();
+        TrackingActivities = new ObservableCollection<TrackingActivity>();
     }
 
     public void OnNavigatedFrom()
@@ -38,10 +40,18 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
             if (emailActivity != null)
             {
                 var activities = await _ccService.GetAllTrackingActivitiesAsync(emailActivity.CampaignActivityId);
+                TrackingActivities.Clear();
+                foreach (var item in activities)
+                {
+                    TrackingActivities.Add(item);
+                }
             }
         }
     }
 
     [ObservableProperty]
     private Campaign sourceCampaign;
+
+    [ObservableProperty]
+    private ObservableCollection<TrackingActivity> trackingActivities; 
 }

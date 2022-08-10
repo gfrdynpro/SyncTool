@@ -240,5 +240,12 @@ public class ConstantContactClientService : IConstantContactClientService
     // Get /reports/email_reports/{campaign_activity_id}/tracking/bounces
     // Get /reports/email_reports/{campaign_activity_id}/tracking/didnotopens
     // Get /reports/email_reports/{campaign_activity_id}/tracking/clicks
-    public Task<List<TrackingActivity>> GetAllTrackingActivitiesAsync(Guid CampaignActivityId) => throw new NotImplementedException();
+    public async Task<List<TrackingActivity>> GetAllTrackingActivitiesAsync(Guid CampaignActivityId)
+    {
+        var theList = new List<TrackingActivity>();
+        var apiClient = new HttpDataService("https://api.cc.email");
+        var opens = await apiClient.GetAsync<TrackingActivitiesList>($"/v3/reports/email_reports/{CampaignActivityId}/tracking/opens", _authToken.AccessToken);
+        theList.AddRange(opens.TrackingActivities);
+        return theList;
+    }
 }
