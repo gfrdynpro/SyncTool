@@ -30,7 +30,8 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
     public async void OnNavigatedTo(object parameter)
     {
         if (parameter is Campaign) 
-        { 
+        {
+            ShowBusy = true;
             Debug.WriteLine("We have a winner.");
             var campaign = (Campaign)parameter;
             SourceCampaign = campaign;
@@ -46,6 +47,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
                     TrackingActivities.Add(item);
                 }
             }
+            ShowBusy = false;
         }
     }
 
@@ -53,5 +55,8 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
     private Campaign sourceCampaign;
 
     [ObservableProperty]
-    private ObservableCollection<TrackingActivity> trackingActivities; 
+    private ObservableCollection<TrackingActivity> trackingActivities;
+
+    [ObservableProperty]
+    private bool showBusy;
 }

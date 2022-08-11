@@ -25,10 +25,25 @@
                   ItemsSource="{x:Bind ViewModel.TrackingActivities, Mode=OneWay}">
             <ListView.ItemTemplate>
                 <DataTemplate x:Name="CampaignDataTemplate" x:DataType="cc:TrackingActivity">
-                    <TextBlock Text="{Binding FirstName}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBlock Text="{Binding FirstName}" Margin="{StaticResource SmallRightMargin}"/>
+                            <TextBlock Text="{Binding LastName}" Margin="{StaticResource SmallRightMargin}"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding EmailAddress}"/>
+                        <TextBlock Grid.Column="2" Text="{Binding TrackingActivityType}"/>
+                        <CheckBox Grid.Column="3" IsChecked="{Binding Sent}" IsEnabled="False"/>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <ProgressRing Grid.Row="1" IsActive="{x:Bind ViewModel.ShowBusy, Mode=OneWay}" />
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

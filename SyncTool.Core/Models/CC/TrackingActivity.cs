@@ -42,6 +42,37 @@ public partial class TrackingActivity
         get; set;
     }
 
+    [JsonProperty("device_type")]
+    public string DeviceType
+    {
+
+        get;set;
+    }
+
+    [JsonProperty("url_id")]
+    public string UrlId
+    {
+        get;set;
+    }
+
+    [JsonProperty("link_url")]
+    public string LinkUrl
+    {
+        get;set; 
+    }
+
+    [JsonProperty("opt_out_reason")]
+    public string OptOutReason
+    {
+        get;set;
+    }
+
+    [JsonProperty("bounce_code")]
+    public string BounceCode
+    {
+        get;set;
+    }
+
     [JsonProperty("created_time")]
     public DateTimeOffset CreatedTime
     {
@@ -52,5 +83,10 @@ public partial class TrackingActivity
     public DateTimeOffset DeletedAt
     {
         get; set;
+    }
+
+    public bool Sent
+    {
+        get;set;
     }
 }
