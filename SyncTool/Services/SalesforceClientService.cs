@@ -6,7 +6,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SyncTool.Contracts.Services;
+using SyncTool.Core.Services;
 using SyncTool.Models;
 using Windows.Web.Http;
 
@@ -50,8 +52,49 @@ public class SalesforceClientService : ISalesforceClientService
         var queryDictionary = System.Web.HttpUtility.ParseQueryString(queryString);
         return queryDictionary["code"];
     }
-    
-    public Task<Token> RefreshAccessTokenAsync() => throw new NotImplementedException();
+
+    public async Task<Token> RefreshAccessTokenAsync()
+    {
+        var token = new Token();
+
+        Debug.WriteLine("**** START REFRESH ACCESS TOKEN ****");
+
+        try
+        {
+            var client = new HttpClient();
+            Uri ccRefreshURL = new Uri("https://cloudalyzepartners.my.salesforce.com/services/oauth2/token");
+            var payload = new Dictionary<string, string>();
+            payload.Add("client_id", _client_id);
+            payload.Add("client_secret", _client_secret);
+            payload.Add("refresh_token", _authToken.RefreshToken);
+            payload.Add("grant_type", "refresh_token");
+            var byteContent = new HttpFormUrlEncodedContent(payload);
+            var response = await client.PostAsync(ccRefreshURL, byteContent);
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                token = JsonConvert.DeserializeObject<Token>(body);
+                token.ExpiryDate = DateTime.UtcNow.AddSeconds(token.ExpiresIn);
+                _authToken = token;
+                // Also stash away for future use
+                var strToken = JsonConvert.SerializeObject(_authToken);
+                var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                settings.Values["SFToken"] = strToken;
+
+            }
+            else
+            {
+                Debug.WriteLine(response.Content);
+                Debug.WriteLine(response.ReasonPhrase);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+
+        return token;
+    }
 
     public async Task<Token> RequestAccessTokenAsync(string auth_code)
     {
@@ -148,5 +191,28 @@ public class SalesforceClientService : ISalesforceClientService
         Debug.WriteLine("Code Verifer Length is (min 43): " + codeVerifier.Length);
 
         return codeVerifier;
+    }
+
+    public async Task<object> GetLeadByEmailAddressAsync(string emailAddress)
+    {
+        var query = $"SELECT+Id,+Name+from+Lead+WHERE+Email='{emailAddress}'";
+        var apiClient = new HttpDataService("https://cloudalyzepartners.my.salesforce.com");
+        try
+        {
+            var lead = await apiClient.GetAsync<object>("/services/data/v55.0/query/?" + query, _authToken.AccessToken);
+            return lead;
+        } catch (System.Net.Http.HttpRequestException ex)
+        {
+            Debug.WriteLine(ex);
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) {
+                await this.RefreshAccessTokenAsync();
+                var lead = await apiClient.GetAsync<object>("/services/data/v55.0/query/?" + query, _authToken.AccessToken);
+                return lead;
+            } 
+            else
+            {
+                return null;
+            }
+        }
     }
 }

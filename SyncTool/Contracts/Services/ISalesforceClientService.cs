@@ -14,4 +14,5 @@ public interface ISalesforceClientService
     string ExtractCode(string codeuri);
     Task<Token> RequestAccessTokenAsync(string auth_code);
     Task<Token> RefreshAccessTokenAsync();
+    Task<object> GetLeadByEmailAddressAsync(string emailAddress);
 }

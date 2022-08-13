@@ -18,12 +18,14 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
 {
     private bool _syncInProgress = false;
     private readonly IConstantContactClientService _ccService;
+    private readonly ISalesforceClientService _sfService;
 
     public CCtoSFSyncViewModel()
     {
         Debug.WriteLine("CC to SF Sync View Model Loaded");
         StartSyncCommand = new RelayCommand(StartSync);
         _ccService = App.GetService<IConstantContactClientService>();
+        _sfService = App.GetService<ISalesforceClientService>();
         TrackingActivities = new ObservableCollection<TrackingActivity>();
     }
 
@@ -60,7 +62,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
         get;
     }
 
-    private void StartSync()
+    private async void StartSync()
     {
         if (_syncInProgress)
             return;
@@ -70,7 +72,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
             var activity = TrackingActivities[i];
             CurrentContact = i;
             Debug.WriteLine(activity.EmailAddress);
-            var success = SyncContactToSF(activity);
+            var success = await SyncContactToSFAsync(activity);
             if (success)
             {
                 activity.Sent = true;
@@ -79,9 +81,10 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
         _syncInProgress = false;
     }
 
-    private bool SyncContactToSF(TrackingActivity activity)
+    private async Task<bool> SyncContactToSFAsync(TrackingActivity activity)
     {
         // Find Lead by email address
+        var sfLead = await _sfService.GetLeadByEmailAddressAsync(activity.EmailAddress);
         // Map data elements
         // Update record
         return true;
