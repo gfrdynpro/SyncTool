@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using SyncTool.Contracts.Services;
 using SyncTool.Contracts.ViewModels;
 using SyncTool.Core.Models.CC;
+using SyncTool.Core.Models.SF;
 using Windows.ApplicationModel.Appointments;
 
 namespace SyncTool.ViewModels;
@@ -85,9 +86,67 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
     {
         // Find Lead by email address
         var sfLead = await _sfService.GetLeadByEmailAddressAsync(activity.EmailAddress);
-        // Map data elements
-        // Update record
-        return true;
+        if (sfLead != null && sfLead.Attributes.Type == "Lead") 
+        {
+            // Map data elements
+            var payload = MapCCtoSF(activity, sfLead);
+            // Update record
+            return true;
+        }
+        return false;
+    }
+
+    private Dictionary<string, string> MapCCtoSF(TrackingActivity ccActivity, Record sfLead)
+    {
+        var payload = new Dictionary<string, string>();
+        var status = "";
+        var reason = "";
+        switch (ccActivity.TrackingActivityType)
+        {
+            case "em_opens":
+                status = "Opens";
+                break;
+            case "em_sends":
+                status = "Did not open";
+                break;
+            case "em_clicks":
+                status = "Click";
+                break;
+            case "em_optouts":
+                status = "Unsubscribed";
+                reason = ccActivity.OptOutReason;
+                break;
+            case "em_bounces":
+                status = "Bounced";
+                switch (ccActivity.BounceCode)
+                {
+                    case "B":
+                        reason = "Non-Existent";
+                        break;
+                    case "D":
+                        reason = "Undeliverable";
+                        break;
+                    case "F":
+                        reason = "Mailbox Full";
+                        break;
+                    case "S":
+                        reason = "Suspended";
+                        break;
+                    case "V":
+                        reason = "";
+                        break;
+                    case "X":
+                        reason = "Other reasons";
+                        break;
+                    case "Z":
+                        reason = "Blocked";
+                        break;
+                }
+                break;
+        }
+        payload.Add("Constant_Contact_Status__c", status);
+        payload.Add("Constant_Contact_Reason__c", reason);
+        return payload;
     }
 
     [ObservableProperty]

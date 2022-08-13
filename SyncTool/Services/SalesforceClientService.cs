@@ -15,8 +15,8 @@ using Windows.Web.Http;
 namespace SyncTool.Services;
 public class SalesforceClientService : ISalesforceClientService
 {
-    private string _client_id;
-    private string _client_secret;
+    private readonly string _client_id;
+    private readonly string _client_secret;
     private string _codeChallenge;
     private string _codeVerifier;
     private Token _authToken;
@@ -55,9 +55,12 @@ public class SalesforceClientService : ISalesforceClientService
 
     public async Task<Token> RefreshAccessTokenAsync()
     {
-        var token = new Token();
-
         Debug.WriteLine("**** START REFRESH ACCESS TOKEN ****");
+
+        if (_authToken == null || _authToken.RefreshToken.Length < 10)
+        {
+            return null;
+        }
 
         try
         {
@@ -73,9 +76,11 @@ public class SalesforceClientService : ISalesforceClientService
             if (response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-                token = JsonConvert.DeserializeObject<Token>(body);
+                var token = JsonConvert.DeserializeObject<Token>(body);
                 token.ExpiryDate = DateTime.UtcNow.AddSeconds(token.ExpiresIn);
-                _authToken = token;
+                _authToken.AccessToken = token.AccessToken;
+                _authToken.ExpiresIn = token.ExpiresIn;
+                _authToken.ExpiryDate = token.ExpiryDate;
                 // Also stash away for future use
                 var strToken = JsonConvert.SerializeObject(_authToken);
                 var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -93,7 +98,7 @@ public class SalesforceClientService : ISalesforceClientService
             Debug.WriteLine(ex.Message);
         }
 
-        return token;
+        return _authToken;
     }
 
     public async Task<Token> RequestAccessTokenAsync(string auth_code)
@@ -195,6 +200,11 @@ public class SalesforceClientService : ISalesforceClientService
 
     public async Task<Core.Models.SF.Record> GetLeadByEmailAddressAsync(string emailAddress)
     {
+        if (_authToken == null || _authToken.AccessToken.Length < 10)
+        {
+            return null;
+        }
+
         var query = $"SELECT+Id,+Name+from+Lead+WHERE+Email='{emailAddress}'";
         var apiClient = new HttpDataService("https://cloudalyzepartners.my.salesforce.com");
         try
