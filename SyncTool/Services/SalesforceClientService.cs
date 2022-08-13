@@ -193,21 +193,29 @@ public class SalesforceClientService : ISalesforceClientService
         return codeVerifier;
     }
 
-    public async Task<object> GetLeadByEmailAddressAsync(string emailAddress)
+    public async Task<Core.Models.SF.Record> GetLeadByEmailAddressAsync(string emailAddress)
     {
         var query = $"SELECT+Id,+Name+from+Lead+WHERE+Email='{emailAddress}'";
         var apiClient = new HttpDataService("https://cloudalyzepartners.my.salesforce.com");
         try
         {
-            var lead = await apiClient.GetAsync<object>("/services/data/v55.0/query/?" + query, _authToken.AccessToken);
-            return lead;
+            var response = await apiClient.GetAsync<Core.Models.SF.SOQLResponse>("/services/data/v55.0/query/?q=" + query, _authToken.AccessToken);
+            if (response.Done == true && response.TotalSize > 0)
+            {
+                return response.Records.FirstOrDefault();
+            }
+            return null;
         } catch (System.Net.Http.HttpRequestException ex)
         {
             Debug.WriteLine(ex);
             if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) {
                 await this.RefreshAccessTokenAsync();
-                var lead = await apiClient.GetAsync<object>("/services/data/v55.0/query/?" + query, _authToken.AccessToken);
-                return lead;
+                var response = await apiClient.GetAsync<Core.Models.SF.SOQLResponse>("/services/data/v55.0/query/?q=" + query, _authToken.AccessToken);
+                if (response.Done == true && response.TotalSize > 0)
+                {
+                    return response.Records.FirstOrDefault();
+                }
+                return null;
             } 
             else
             {
