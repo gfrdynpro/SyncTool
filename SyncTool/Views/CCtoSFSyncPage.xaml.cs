@@ -33,4 +33,9 @@ public sealed partial class CCtoSFSyncPage : Page
         ViewModel = App.GetService<CCtoSFSyncViewModel>();
         this.InitializeComponent();
     }
+
+    private void ccListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ccListView.ScrollIntoView(ccListView.SelectedItem);
+    }
 }

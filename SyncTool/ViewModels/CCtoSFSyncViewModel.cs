@@ -70,8 +70,21 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
             var activity = TrackingActivities[i];
             CurrentContact = i;
             Debug.WriteLine(activity.EmailAddress);
+            var success = SyncContactToSF(activity);
+            if (success)
+            {
+                activity.Sent = true;
+            }
         }
         _syncInProgress = false;
+    }
+
+    private bool SyncContactToSF(TrackingActivity activity)
+    {
+        // Find Lead by email address
+        // Map data elements
+        // Update record
+        return true;
     }
 
     [ObservableProperty]
