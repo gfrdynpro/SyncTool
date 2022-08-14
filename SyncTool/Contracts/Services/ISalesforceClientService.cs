@@ -16,5 +16,5 @@ public interface ISalesforceClientService
     Task<Token> RequestAccessTokenAsync(string auth_code);
     Task<Token> RefreshAccessTokenAsync();
     Task<Core.Models.SF.Record> GetLeadByEmailAddressAsync(string emailAddress);
-    Task<object> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, string> payload);
+    Task<bool> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, string> payload);
 }

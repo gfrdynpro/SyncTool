@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -235,35 +236,53 @@ public class SalesforceClientService : ISalesforceClientService
         }
     }
 
-    public async Task<object> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, string> payload)
+    public async Task<bool> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, string> payload)
     {
         if (_authToken == null || _authToken.AccessToken.Length < 10)
         {
-            return null;
+            return false;
         }
-
-        var byteContent = new HttpFormUrlEncodedContent(payload);
+        var serializedItem = JsonConvert.SerializeObject(payload);
+        var stringContent = new HttpStringContent(serializedItem, Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/json");
+        // var byteContent = new HttpFormUrlEncodedContent(payload);
         var client = new HttpClient();
+        var method = new HttpMethod("PATCH");
+        client.DefaultRequestHeaders.Authorization = new Windows.Web.Http.Headers.HttpCredentialsHeaderValue("Bearer", _authToken.AccessToken);
         Uri sfLeadURL = new Uri("https://cloudalyzepartners.my.salesforce.com" + sfLead.Attributes.Url);
-
+        var totalRequest = new HttpRequestMessage(method, sfLeadURL);
+        totalRequest.Content = stringContent;
         try
         {
-            var response = await client.PutAsync(sfLeadURL, byteContent);
+            var response = await client.SendRequestAsync(totalRequest);
             if (response.IsSuccessStatusCode)
             {
+                return true;
             }
-        }
-        catch (System.Net.Http.HttpRequestException ex)
-        {
-            Debug.WriteLine(ex);
-            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            else
             {
-                await this.RefreshAccessTokenAsync();
-                var response = await client.PutAsync(sfLeadURL, byteContent);
-                if (response.IsSuccessStatusCode)
+                if (response.ReasonPhrase == "Unauthorized")
                 {
+                    await this.RefreshAccessTokenAsync();
+                    response = await client.SendRequestAsync(totalRequest);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            return false;
         }
     }
 }
