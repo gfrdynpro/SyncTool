@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SyncTool.Contracts.Services;
+using SyncTool.Core.Models.SF;
 using SyncTool.Core.Services;
 using SyncTool.Models;
 using Windows.Web.Http;
@@ -111,7 +112,7 @@ public class SalesforceClientService : ISalesforceClientService
         {
             var client = new HttpClient();
 
-            Uri ccTokenURL = new Uri("https://cloudalyzepartners.my.salesforce.com/services/oauth2/token");
+            Uri sfTokenURL = new Uri("https://cloudalyzepartners.my.salesforce.com/services/oauth2/token");
 
             var payload = new Dictionary<string, string>();
             payload.Add("client_id", _client_id);
@@ -121,7 +122,7 @@ public class SalesforceClientService : ISalesforceClientService
             payload.Add("grant_type", "authorization_code");
 
             var byteContent = new HttpFormUrlEncodedContent(payload);
-            var response = await client.PostAsync(ccTokenURL, byteContent);
+            var response = await client.PostAsync(sfTokenURL, byteContent);
             if (response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
@@ -230,6 +231,38 @@ public class SalesforceClientService : ISalesforceClientService
             else
             {
                 return null;
+            }
+        }
+    }
+
+    public async Task<object> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, string> payload)
+    {
+        if (_authToken == null || _authToken.AccessToken.Length < 10)
+        {
+            return null;
+        }
+
+        var byteContent = new HttpFormUrlEncodedContent(payload);
+        var client = new HttpClient();
+        Uri sfLeadURL = new Uri("https://cloudalyzepartners.my.salesforce.com" + sfLead.Attributes.Url);
+
+        try
+        {
+            var response = await client.PutAsync(sfLeadURL, byteContent);
+            if (response.IsSuccessStatusCode)
+            {
+            }
+        }
+        catch (System.Net.Http.HttpRequestException ex)
+        {
+            Debug.WriteLine(ex);
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await this.RefreshAccessTokenAsync();
+                var response = await client.PutAsync(sfLeadURL, byteContent);
+                if (response.IsSuccessStatusCode)
+                {
+                }
             }
         }
     }

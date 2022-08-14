@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SyncTool.Core.Models.SF;
 using SyncTool.Models;
 
 namespace SyncTool.Contracts.Services;
@@ -15,4 +16,5 @@ public interface ISalesforceClientService
     Task<Token> RequestAccessTokenAsync(string auth_code);
     Task<Token> RefreshAccessTokenAsync();
     Task<Core.Models.SF.Record> GetLeadByEmailAddressAsync(string emailAddress);
+    Task<object> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, string> payload);
 }
