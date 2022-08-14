@@ -91,8 +91,15 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
             // Map data elements
             var payload = MapCCtoSF(activity, sfLead);
             // Update record
-            var reply = await _sfService.UpdateLeadRecordAsync(sfLead, payload);
-            return true;
+            var success = await _sfService.UpdateLeadRecordAsync(sfLead, payload);
+            if (success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         return false;
     }
