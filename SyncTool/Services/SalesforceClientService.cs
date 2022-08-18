@@ -236,7 +236,7 @@ public class SalesforceClientService : ISalesforceClientService
         }
     }
 
-    public async Task<bool> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, string> payload)
+    public async Task<bool> UpdateLeadRecordAsync(Record sfLead, Dictionary<string, object> payload)
     {
         if (_authToken == null || _authToken.AccessToken.Length < 10)
         {

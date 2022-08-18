@@ -244,30 +244,10 @@ public class ConstantContactClientService : IConstantContactClientService
     {
         var theList = new List<TrackingActivity>();
         var apiClient = new HttpDataService("https://api.cc.email");
-        // OPENS
-        var opens = await apiClient.GetAsync<TrackingActivitiesList>($"/v3/reports/email_reports/{CampaignActivityId}/tracking/opens", _authToken.AccessToken);
-        theList.AddRange(opens.TrackingActivities);
-        var next = opens.Links?.Next.Href;
-        while (next != null)
-        {
-            var opens2 = await apiClient.GetAsync<TrackingActivitiesList>(next, _authToken.AccessToken);
-            theList.AddRange(opens2.TrackingActivities);
-            next = opens2.Links?.Next.Href;
-        }
-        // OPTOUTS
-        var optouts = await apiClient.GetAsync<TrackingActivitiesList>($"/v3/reports/email_reports/{CampaignActivityId}/tracking/optouts", _authToken.AccessToken);
-        theList.AddRange(optouts.TrackingActivities);
-        next = optouts.Links?.Next.Href;
-        while (next != null)
-        {
-            var optouts2 = await apiClient.GetAsync<TrackingActivitiesList>(next, _authToken.AccessToken);
-            theList.AddRange(optouts2.TrackingActivities);
-            next = optouts2.Links?.Next.Href;
-        }
         // BOUNCES
         var bounces = await apiClient.GetAsync<TrackingActivitiesList>($"/v3/reports/email_reports/{CampaignActivityId}/tracking/bounces", _authToken.AccessToken);
         theList.AddRange(bounces.TrackingActivities);
-        next = bounces.Links?.Next.Href;
+        var next = bounces.Links?.Next.Href;
         while (next != null)
         {
             var bounces2 = await apiClient.GetAsync<TrackingActivitiesList>(next, _authToken.AccessToken);
@@ -284,6 +264,16 @@ public class ConstantContactClientService : IConstantContactClientService
             theList.AddRange(didnotopens2.TrackingActivities);
             next = didnotopens2.Links?.Next.Href;
         }
+        // OPENS
+        var opens = await apiClient.GetAsync<TrackingActivitiesList>($"/v3/reports/email_reports/{CampaignActivityId}/tracking/opens", _authToken.AccessToken);
+        theList.AddRange(opens.TrackingActivities);
+        next = opens.Links?.Next.Href;
+        while (next != null)
+        {
+            var opens2 = await apiClient.GetAsync<TrackingActivitiesList>(next, _authToken.AccessToken);
+            theList.AddRange(opens2.TrackingActivities);
+            next = opens2.Links?.Next.Href;
+        }
         // CLICKS
         var clicks = await apiClient.GetAsync<TrackingActivitiesList>($"/v3/reports/email_reports/{CampaignActivityId}/tracking/clicks", _authToken.AccessToken);
         theList.AddRange(clicks.TrackingActivities);
@@ -293,6 +283,16 @@ public class ConstantContactClientService : IConstantContactClientService
             var clicks2 = await apiClient.GetAsync<TrackingActivitiesList>(next, _authToken.AccessToken);
             theList.AddRange(clicks2.TrackingActivities);
             next = clicks2.Links?.Next.Href;
+        }
+        // OPTOUTS
+        var optouts = await apiClient.GetAsync<TrackingActivitiesList>($"/v3/reports/email_reports/{CampaignActivityId}/tracking/optouts", _authToken.AccessToken);
+        theList.AddRange(optouts.TrackingActivities);
+        next = optouts.Links?.Next.Href;
+        while (next != null)
+        {
+            var optouts2 = await apiClient.GetAsync<TrackingActivitiesList>(next, _authToken.AccessToken);
+            theList.AddRange(optouts2.TrackingActivities);
+            next = optouts2.Links?.Next.Href;
         }
         return theList;
     }

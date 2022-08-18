@@ -104,11 +104,12 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
         return false;
     }
 
-    private Dictionary<string, string> MapCCtoSF(TrackingActivity ccActivity, Record sfLead)
+    private Dictionary<string, object> MapCCtoSF(TrackingActivity ccActivity, Record sfLead)
     {
-        var payload = new Dictionary<string, string>();
+        var payload = new Dictionary<string, object>();
         var status = "";
         var reason = "";
+        var opt_out = false;
         switch (ccActivity.TrackingActivityType)
         {
             case "em_opens":
@@ -123,6 +124,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
             case "em_optouts":
                 status = "Unsubscribed";
                 reason = ccActivity.OptOutReason;
+                opt_out = true;
                 break;
             case "em_bounces":
                 status = "Bounced";
@@ -154,6 +156,8 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
         }
         payload.Add("Constant_Contact_Status__c", status);
         payload.Add("Constant_Contact_Reason__c", reason);
+        payload.Add("HasOptedOutOfEmail", opt_out);
+        payload.Add("Not_to_Include_in_Any_Campaign__c", opt_out);
         return payload;
     }
 
