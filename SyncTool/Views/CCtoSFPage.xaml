@@ -30,7 +30,8 @@
                     <Border BorderBrush="DarkGray" BorderThickness="1" Margin="0,2" Padding="5">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="{Binding Name}" Style="{ThemeResource NavigationViewItemHeaderTextStyle}"/>
-                            <TextBlock Text="{Binding CreatedAt}" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                            <TextBlock Text="{Binding UpdatedAt}" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                            <TextBlock Text="{Binding CurrentStatus}" Style="{ThemeResource CaptionTextBlockStyle}"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>

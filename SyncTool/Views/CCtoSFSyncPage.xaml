@@ -40,7 +40,7 @@
                         </StackPanel>
                         <TextBlock Grid.Column="1" Text="{Binding EmailAddress}"/>
                         <TextBlock Grid.Column="2" Text="{Binding TrackingActivityType}"/>
-                        <CheckBox Grid.Column="3" IsChecked="{Binding Sent}" IsEnabled="False"/>
+                        <CheckBox Grid.Column="3" IsChecked="{Binding Sent, Mode=OneWay}" IsEnabled="False"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
