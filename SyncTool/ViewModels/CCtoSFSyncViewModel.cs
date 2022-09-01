@@ -27,7 +27,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
         StartSyncCommand = new RelayCommand(StartSync);
         _ccService = App.GetService<IConstantContactClientService>();
         _sfService = App.GetService<ISalesforceClientService>();
-        TrackingActivities = new ObservableCollection<TrackingActivity>();
+        TrackingActivities = new ObservableCollection<CCTrackingActivity>();
     }
 
     public void OnNavigatedFrom()
@@ -51,7 +51,16 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
                 TrackingActivities.Clear();
                 foreach (var item in activities)
                 {
-                    TrackingActivities.Add(item);
+                    var cc = new CCTrackingActivity
+                    {
+                        FirstName = item.FirstName,
+                        LastName = item.LastName,
+                        EmailAddress = item.EmailAddress,
+                        TrackingActivityType = item.TrackingActivityType,
+                        Sent = false,
+                        CCObject = item
+                    };
+                    TrackingActivities.Add(cc);
                 }
             }
             ShowBusy = false;
@@ -73,7 +82,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
             var activity = TrackingActivities[i];
             CurrentContact = i;
             Debug.WriteLine(activity.EmailAddress);
-            var success = await SyncContactToSFAsync(activity);
+            var success = await SyncContactToSFAsync(activity.CCObject);
             if (success)
             {
                 activity.Sent = true;
@@ -165,7 +174,7 @@ public partial class CCtoSFSyncViewModel : ObservableRecipient, INavigationAware
     private Campaign sourceCampaign;
 
     [ObservableProperty]
-    private ObservableCollection<TrackingActivity> trackingActivities;
+    private ObservableCollection<CCTrackingActivity> trackingActivities;
 
     [ObservableProperty]
     private bool showBusy;

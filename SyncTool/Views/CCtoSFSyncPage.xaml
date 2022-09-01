@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SyncTool.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:cc="using:SyncTool.Core.Models.CC"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:vm="using:SyncTool.ViewModels"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -26,7 +26,7 @@
                   SelectedIndex="{x:Bind ViewModel.CurrentContact, Mode=OneWay}"
                   SelectionChanged="ccListView_SelectionChanged">
             <ListView.ItemTemplate>
-                <DataTemplate x:Name="CampaignDataTemplate" x:DataType="cc:TrackingActivity">
+                <DataTemplate x:Name="CampaignDataTemplate" x:DataType="vm:CCTrackingActivity">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

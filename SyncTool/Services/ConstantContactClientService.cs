@@ -17,7 +17,7 @@ using Windows.Web.Http;
 namespace SyncTool.Services;
 public class ConstantContactClientService : IConstantContactClientService
 {
-    private string _client_id;
+    private readonly string _client_id;
     private string _codeChallenge;
     private string _codeVerifier;
     private Token _authToken;
